@@ -20,7 +20,6 @@ public class Customer_Dashboard extends javax.swing.JFrame {
         this.inventory = new Inventory();
         initComponents();
         customizeComponents();
-        loadProducts();
     }
 
     private void customizeComponents() {
@@ -31,13 +30,6 @@ public class Customer_Dashboard extends javax.swing.JFrame {
         productList = new JList<>(productListModel);
         productDetailsArea = new JTextArea();
         productDetailsArea.setEditable(false);
-    }
-
-    private void loadProducts() {
-        productListModel.clear();
-        for (Product product : inventory.getProducts()) {
-            productListModel.addElement(product);
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -99,35 +91,7 @@ public class Customer_Dashboard extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void checkoutActionPerformed(ActionEvent evt) {
-        if (customer.getCart().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Your cart is empty!", "Checkout Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            // Logic to proceed to checkout
-            customer.checkout();
-            JOptionPane.showMessageDialog(this, "Checkout successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
-
-    private void addToCartActionPerformed(ActionEvent evt) {
-        Product selectedProduct = productList.getSelectedValue();
-        if (selectedProduct != null) {
-            customer.addToCart(selectedProduct);
-            JOptionPane.showMessageDialog(this, selectedProduct.getProductName() + " added to cart.", "Success", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this, "Please select a product to add to cart.", "Selection Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void removeFromCartActionPerformed(ActionEvent evt) {
-        Product selectedProduct = productList.getSelectedValue();
-        if (selectedProduct != null) {
-            customer.removeFromCart(selectedProduct);
-            JOptionPane.showMessageDialog(this, selectedProduct.getProductName() + " removed from cart.", "Success", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this, "Please select a product to remove from cart.", "Selection Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
+    
     
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         Login_Form login = Login_Form.getInstance();
