@@ -19,7 +19,6 @@ public class Login_Form extends javax.swing.JFrame {
 
     private Login_Form() {
         initComponents();
-        customizeComponents();
     }
 
     public static Login_Form getInstance() {
@@ -27,12 +26,6 @@ public class Login_Form extends javax.swing.JFrame {
             main = new Login_Form();
         }
         return main;
-    }
-
-    private void customizeComponents() {
-        setTitle("E-HUB SALES");
-        setSize(400, 300);
-        setLocationRelativeTo(null);
     }
 
     private void showErrorMessage(String message) {
@@ -194,6 +187,7 @@ public class Login_Form extends javax.swing.JFrame {
             if (rs.next()) {
                 String storedPassword = rs.getString("Password");
                 if (storedPassword.equals(password)) {
+                    JOptionPane.showMessageDialog(this, "Welcome, " + username + "!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
                     String role = rs.getString("Role");
                     switch (role) {
                         case "Customer":

@@ -10,13 +10,6 @@ import java.sql.PreparedStatement;
 public class SignUp_Form extends javax.swing.JFrame {
     public SignUp_Form() {
         initComponents();
-        customizeComponents();
-    }
-
-    private void customizeComponents() {
-        setTitle("Sign Up - E-HUB SALES");
-        setSize(400, 300);
-        setLocationRelativeTo(null);
     }
 
     @SuppressWarnings("unchecked")
@@ -159,12 +152,14 @@ public class SignUp_Form extends javax.swing.JFrame {
         }
 
         String insertQuery = "INSERT INTO users (Username, Password, Role) VALUES (?, ?, ?)";
+        
         try (Connection con = DriverManager.getConnection(dbUrl, dbUser  , dbPassword);
-             PreparedStatement ps = con.prepareStatement(insertQuery)) {
+            PreparedStatement ps = con.prepareStatement(insertQuery)) {
             ps.setString(1, username);
             ps.setString(2, password);
             ps.setString(3, role);
             ps.executeUpdate();
+            
             JOptionPane.showMessageDialog(this, "User  registered successfully!");
             this.dispose();
             Login_Form login = Login_Form.getInstance();
