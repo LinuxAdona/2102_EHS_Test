@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class SignUp_Form extends javax.swing.JFrame {
     public SignUp_Form() {
@@ -143,7 +144,7 @@ public class SignUp_Form extends javax.swing.JFrame {
         String password = new String(txtPassword.getPassword());
         String role = (String) comboRole.getSelectedItem();
         String dbUrl = "jdbc:mysql://localhost:3306/oop_ehub_sales";
-        String dbUser   = "root";
+        String dbUser    = "root";
         String dbPassword = "";
 
         if (username.isEmpty() || password.isEmpty()) {
@@ -151,19 +152,46 @@ public class SignUp_Form extends javax.swing.JFrame {
             return;
         }
 
-        String insertQuery = "INSERT INTO users (Username, Password, Role) VALUES (?, ?, ?)";
-        
-        try (Connection con = DriverManager.getConnection(dbUrl, dbUser  , dbPassword);
-            PreparedStatement ps = con.prepareStatement(insertQuery)) {
+        String insertUserQuery = "INSERT INTO users (Username, Password, Role) VALUES (?, ?, ?)";
+        String insertAdminQuery = "INSERT INTO admin (UserID) VALUES (?)";
+        String insertCustomerQuery = "INSERT INTO customer (UserID) VALUES (?)";
+        String insertSupplierQuery = "INSERT INTO supplier (UserID) VALUES (?)";
+
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+            PreparedStatement ps = con.prepareStatement(insertUserQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, username);
             ps.setString(2, password);
             ps.setString(3, role);
             ps.executeUpdate();
-            
-            JOptionPane.showMessageDialog(this, "User  registered successfully!");
-            this.dispose();
-            Login_Form login = Login_Form.getInstance();
-            login.setVisible(true);
+
+            // Retrieve the generated UserID
+            ResultSet generatedKeys = ps.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int userId = generatedKeys.getInt(1); // Get the generated UserID
+
+                // Insert into the respective role table
+                if (role.equals("Admin")) {
+                    try (PreparedStatement adminPs = con.prepareStatement(insertAdminQuery)) {
+                        adminPs.setInt(1, userId);
+                        adminPs.executeUpdate();
+                    }
+                } else if (role.equals("Customer")) {
+                    try (PreparedStatement customerPs = con.prepareStatement(insertCustomerQuery)) {
+                        customerPs.setInt(1, userId);
+                        customerPs.executeUpdate();
+                    }
+                } else if (role.equals("Supplier")) {
+                    try (PreparedStatement supplierPs = con.prepareStatement(insertSupplierQuery)) {
+                        supplierPs.setInt(1, userId);
+                        supplierPs.executeUpdate();
+                    }
+                }
+
+                JOptionPane.showMessageDialog(this, "User  registered successfully!");
+                this.dispose();
+                Login_Form login = Login_Form.getInstance();
+                login.setVisible(true);
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
