@@ -7,8 +7,6 @@ import com.ehub_sales.e.hub_sales.Users.Customer;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.*;
-import java.util.List;
 
 public class Customer_Dashboard extends javax.swing.JFrame {
     private Customer customer;
@@ -20,78 +18,7 @@ public class Customer_Dashboard extends javax.swing.JFrame {
     public Customer_Dashboard(Customer customer) {
         this.customer = customer;
         this.inventory = new Inventory();
-        loadProducts();
-        setupListeners();
-    }
-
-    private void loadProducts() {
-        List<Product> products = inventory.getProducts();
-        DefaultListModel<Product> model = new DefaultListModel<>();
-        for (Product product : products) {
-            model.addElement(product);
-        }
-        List_Products.setModel(model);
-    }
-
-    private void setupListeners() {
-        List_Products.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                Product selectedProduct = List_Products.getSelectedValue();
-                if (selectedProduct != null) {
-                    displayProductDetails(selectedProduct);
-                }
-            }
-        });
-
-        btnAddToCart.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                addToCart();
-            }
-        });
-
-        btnRemoveFromCart.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                removeFromCart();
-            }
-        });
-    }
-
-    private void displayProductDetails(Product product) {
-        lblProductName.setText(product.getName());
-        lblProductDesc.setText(product.getDescription());
-        // Set the image if available
-        lblProductImage.setIcon(new ImageIcon("path/to/image/" + product.getProductId() + ".png")); // Example path
-    }
-
-    private void addToCart() {
-        Product selectedProduct = List_Products.getSelectedValue();
-        if (selectedProduct != null) {
-            int quantity = 1; // You can prompt the user for quantity input
-            customer.addProductToCart(selectedProduct.getProductId(), quantity);
-            updateCartTable();
-        } else {
-            JOptionPane.showMessageDialog(this, "Please select a product to add to the cart.", "No Product Selected", JOptionPane.WARNING_MESSAGE);
-        }
-    }
-
-    private void removeFromCart() {
-        int selectedRow = Table_ShoppingCart.getSelectedRow();
-        if (selectedRow != -1) {
-            String productId = (String) Table_ShoppingCart.getValueAt(selectedRow, 0); // Assuming ID is in the first column
-            customer.removeProductFromCart(productId);
-            updateCartTable();
-        } else {
-            JOptionPane.showMessageDialog(this, "Please select a product from the cart to remove.", "No Product Selected", JOptionPane.WARNING_MESSAGE);
-        }
-    }
-
-    private void updateCartTable() {
-        cartTableModel = new DefaultTableModel(new Object[]{"ID", "Name", "Quantity", "Price"}, 0);
-        for (Product product : customer.getCart().getCartItems().keySet()) {
-            int quantity = customer.getCart().getCartItems().get(product);
-            cartTableModel.addRow(new Object[]{product.getProductId(), product.getName(), quantity, product.getPrice()});
-        }
-        Table_ShoppingCart.setModel(cartTableModel);
+        initComponents();
     }
 
     @SuppressWarnings("unchecked")
@@ -112,7 +39,7 @@ public class Customer_Dashboard extends javax.swing.JFrame {
         btnCheckOut = new javax.swing.JButton();
         btnAddToCart = new javax.swing.JButton();
         btnRemoveFromCart = new javax.swing.JButton();
-        btnBack1 = new javax.swing.JButton();
+        btnBack = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -174,15 +101,11 @@ public class Customer_Dashboard extends javax.swing.JFrame {
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblProductImage, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblProductName)
-                            .addComponent(lblProductDesc, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(4, 4, 4)
-                        .addComponent(lblSupplierName)))
+                    .addComponent(lblProductName)
+                    .addComponent(lblProductDesc, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblSupplierName))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -241,15 +164,15 @@ public class Customer_Dashboard extends javax.swing.JFrame {
             }
         });
 
-        btnBack1.setBackground(new java.awt.Color(153, 153, 255));
-        btnBack1.setFont(new java.awt.Font("Helvetica", 1, 12)); // NOI18N
-        btnBack1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/back.png"))); // NOI18N
-        btnBack1.setText("Go Back");
-        btnBack1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnBack1.setMargin(new java.awt.Insets(2, 0, 3, 0));
-        btnBack1.addActionListener(new java.awt.event.ActionListener() {
+        btnBack.setBackground(new java.awt.Color(153, 153, 255));
+        btnBack.setFont(new java.awt.Font("Helvetica", 1, 12)); // NOI18N
+        btnBack.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/back.png"))); // NOI18N
+        btnBack.setText("Go Back");
+        btnBack.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnBack.setMargin(new java.awt.Insets(2, 0, 3, 0));
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBack1ActionPerformed(evt);
+                btnBackActionPerformed(evt);
             }
         });
 
@@ -262,7 +185,7 @@ public class Customer_Dashboard extends javax.swing.JFrame {
                 .addGroup(MainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnCheckOut, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainPanelLayout.createSequentialGroup()
-                        .addComponent(btnBack1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblShoppingCart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -284,7 +207,7 @@ public class Customer_Dashboard extends javax.swing.JFrame {
                     .addGroup(MainPanelLayout.createSequentialGroup()
                         .addGroup(MainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblShoppingCart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnBack1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(16, 16, 16)
@@ -315,14 +238,14 @@ public class Customer_Dashboard extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCheckOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckOutActionPerformed
+        
+    }//GEN-LAST:event_btnCheckOutActionPerformed
+
+    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         Login_Form login = Login_Form.getInstance();
         login.setVisible(true);
         this.setVisible(false);
-    }//GEN-LAST:event_btnCheckOutActionPerformed
-
-    private void btnBack1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBack1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnBack1ActionPerformed
+    }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnAddToCartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddToCartActionPerformed
         // TODO add your handling code here:
@@ -349,7 +272,7 @@ public class Customer_Dashboard extends javax.swing.JFrame {
     private javax.swing.JPanel MainPanel;
     private javax.swing.JTable Table_ShoppingCart;
     private javax.swing.JButton btnAddToCart;
-    private javax.swing.JButton btnBack1;
+    private javax.swing.JButton btnBack;
     private javax.swing.JButton btnCheckOut;
     private javax.swing.JButton btnRemoveFromCart;
     private javax.swing.JPanel jPanel1;
