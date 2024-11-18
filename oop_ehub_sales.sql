@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 18, 2024 at 11:55 AM
+-- Generation Time: Nov 18, 2024 at 01:49 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -79,16 +79,17 @@ CREATE TABLE `products` (
   `Description` text DEFAULT NULL,
   `Price` decimal(10,2) DEFAULT NULL,
   `Quantity` int(11) DEFAULT NULL,
-  `SupplierID` int(11) DEFAULT NULL
+  `SupplierID` int(11) DEFAULT NULL,
+  `Image` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`ProductID`, `ProductName`, `Description`, `Price`, `Quantity`, `SupplierID`) VALUES
-(1, 'Laptop', 'High-End Gaming Laptop for Gamers', 20000.00, 20, NULL),
-(2, 'iPhone 20 Pro Max', 'Newly Launched High-End Mobile Phone', 40000.00, 15, NULL);
+INSERT INTO `products` (`ProductID`, `ProductName`, `Description`, `Price`, `Quantity`, `SupplierID`, `Image`) VALUES
+(1, 'Laptop', 'High-End Gaming Laptop for Gamers', 20000.00, 20, 8, 'src/img/product_images/Laptop.jpeg'),
+(2, 'iPhone 20 Pro Max', 'Newly Launched High-End Mobile Phone', 40000.00, 15, 9, 'src/img/product_images/iPhone.jpeg');
 
 -- --------------------------------------------------------
 
