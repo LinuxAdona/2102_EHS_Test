@@ -9,15 +9,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Customer_Dashboard extends javax.swing.JFrame {
-    private Customer customer;
-    private Inventory inventory;
     private DefaultListModel<Product> productListModel;
     private JList<Product> productList;
     private JTextArea productDetailsArea;
 
-    public Customer_Dashboard(Customer customer) {
-        this.customer = customer;
-        this.inventory = new Inventory();
+    public Customer_Dashboard() {
         initComponents();
     }
 
@@ -36,6 +32,9 @@ public class Customer_Dashboard extends javax.swing.JFrame {
         lblProductName = new javax.swing.JLabel();
         lblProductDesc = new javax.swing.JLabel();
         lblSupplierName = new javax.swing.JLabel();
+        btnPlusQuantity = new javax.swing.JButton();
+        btnMinusQuantity = new javax.swing.JButton();
+        lblQuantity = new javax.swing.JLabel();
         btnCheckOut = new javax.swing.JButton();
         btnAddToCart = new javax.swing.JButton();
         btnRemoveFromCart = new javax.swing.JButton();
@@ -92,6 +91,30 @@ public class Customer_Dashboard extends javax.swing.JFrame {
         lblSupplierName.setFont(new java.awt.Font("Helvetica", 1, 14)); // NOI18N
         lblSupplierName.setText("Supplier Name");
 
+        btnPlusQuantity.setBackground(new java.awt.Color(153, 153, 255));
+        btnPlusQuantity.setFont(new java.awt.Font("Helvetica", 1, 12)); // NOI18N
+        btnPlusQuantity.setText("+");
+        btnPlusQuantity.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnPlusQuantity.setMargin(new java.awt.Insets(2, 0, 3, 0));
+        btnPlusQuantity.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPlusQuantityActionPerformed(evt);
+            }
+        });
+
+        btnMinusQuantity.setBackground(new java.awt.Color(153, 153, 255));
+        btnMinusQuantity.setFont(new java.awt.Font("Helvetica", 1, 12)); // NOI18N
+        btnMinusQuantity.setText("-");
+        btnMinusQuantity.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnMinusQuantity.setMargin(new java.awt.Insets(2, 0, 3, 0));
+        btnMinusQuantity.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMinusQuantityActionPerformed(evt);
+            }
+        });
+
+        lblQuantity.setText("Quantity");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -100,12 +123,21 @@ public class Customer_Dashboard extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblProductImage, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblProductName)
-                    .addComponent(lblProductDesc, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblSupplierName))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(lblProductImage, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblProductName)
+                            .addComponent(lblProductDesc, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblSupplierName)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(23, 23, 23)
+                        .addComponent(btnPlusQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblQuantity)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnMinusQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -121,7 +153,12 @@ public class Customer_Dashboard extends javax.swing.JFrame {
                         .addComponent(lblProductDesc, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(lblSupplierName)))
-                .addGap(252, 252, 252))
+                .addGap(189, 189, 189)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnPlusQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblQuantity)
+                    .addComponent(btnMinusQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(23, 23, 23))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane2))
@@ -194,7 +231,8 @@ public class Customer_Dashboard extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnRemoveFromCart, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 722, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 722, Short.MAX_VALUE)
+                .addContainerGap())
         );
         MainPanelLayout.setVerticalGroup(
             MainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -255,17 +293,13 @@ public class Customer_Dashboard extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnRemoveFromCartActionPerformed
 
-    
-    
-    // Separate action method for viewing products
-    private void viewProductsAction() {
-        // Code to display available products
-    }
+    private void btnPlusQuantityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlusQuantityActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnPlusQuantityActionPerformed
 
-    // Separate action method for making a purchase
-    private void makePurchaseAction() {
-        // Code to handle purchasing a product
-    }
+    private void btnMinusQuantityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMinusQuantityActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnMinusQuantityActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList<String> List_Products;
@@ -274,6 +308,8 @@ public class Customer_Dashboard extends javax.swing.JFrame {
     private javax.swing.JButton btnAddToCart;
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnCheckOut;
+    private javax.swing.JButton btnMinusQuantity;
+    private javax.swing.JButton btnPlusQuantity;
     private javax.swing.JButton btnRemoveFromCart;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
@@ -281,6 +317,7 @@ public class Customer_Dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel lblProductDesc;
     private javax.swing.JLabel lblProductImage;
     private javax.swing.JLabel lblProductName;
+    private javax.swing.JLabel lblQuantity;
     private javax.swing.JLabel lblShoppingCart;
     private javax.swing.JLabel lblSupplierName;
     // End of variables declaration//GEN-END:variables

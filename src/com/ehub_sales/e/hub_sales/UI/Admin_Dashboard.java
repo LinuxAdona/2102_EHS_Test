@@ -9,19 +9,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Admin_Dashboard extends javax.swing.JFrame {
-    private Admin admin;
-    private Inventory inventory;
     private DefaultListModel<Product> productListModel;
     private JList<Product> productList;
 
-    public Admin_Dashboard(Admin admin) {
-        this.admin = admin;
-        this.inventory = new Inventory();
+    public Admin_Dashboard() {
         initComponents();
     }
     
-    
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

@@ -12,10 +12,6 @@ import com.ehub_sales.e.hub_sales.Users.Customer;
 
 public class Login_Form extends javax.swing.JFrame {
     private static Login_Form main = null;
-    private final Inventory inventory = new Inventory();
-    private final SalesReport salesReport = new SalesReport();
-    private final Admin admin = new Admin("A001", "admin", "123", salesReport);
-    private final Customer customer = new Customer("C001", "customer", "123");
 
     private Login_Form() {
         initComponents();
@@ -191,13 +187,13 @@ public class Login_Form extends javax.swing.JFrame {
                     String role = rs.getString("Role");
                     switch (role) {
                         case "Customer":
-                            Customer_Dashboard customerDashboard = new Customer_Dashboard(customer);
+                            Customer_Dashboard customerDashboard = new Customer_Dashboard();
                             customerDashboard.setVisible(true);
                             resetFields();
                             this.dispose();
                             break;
                         case "Admin":
-                            Admin_Dashboard adminDashboard = new Admin_Dashboard(admin);
+                            Admin_Dashboard adminDashboard = new Admin_Dashboard();
                             adminDashboard.setVisible(true);
                             resetFields();
                             this.dispose();
