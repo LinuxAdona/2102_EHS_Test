@@ -73,7 +73,7 @@ public class Login_Form extends javax.swing.JFrame {
         txtPassword.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         btnLogin.setBackground(new java.awt.Color(153, 153, 255));
-        btnLogin.setFont(new java.awt.Font("Helvetica", 0, 12)); // NOI18N
+        btnLogin.setFont(new java.awt.Font("Helvetica", 1, 12)); // NOI18N
         btnLogin.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/log-in.png"))); // NOI18N
         btnLogin.setText("Log In");
         btnLogin.setToolTipText("");
@@ -90,7 +90,7 @@ public class Login_Form extends javax.swing.JFrame {
         });
 
         btnSignUp.setBackground(new java.awt.Color(153, 153, 255));
-        btnSignUp.setFont(new java.awt.Font("Helvetica", 0, 12)); // NOI18N
+        btnSignUp.setFont(new java.awt.Font("Helvetica", 1, 12)); // NOI18N
         btnSignUp.setText("Sign Up");
         btnSignUp.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnSignUp.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
@@ -193,16 +193,19 @@ public class Login_Form extends javax.swing.JFrame {
                         case "Customer":
                             Customer_Dashboard customerDashboard = new Customer_Dashboard(customer);
                             customerDashboard.setVisible(true);
+                            resetFields();
                             this.dispose();
                             break;
                         case "Admin":
                             Admin_Dashboard adminDashboard = new Admin_Dashboard(admin);
                             adminDashboard.setVisible(true);
+                            resetFields();
                             this.dispose();
                             break;
                         case "Supplier":
                             Supplier_Dashboard supplierDashboard = new Supplier_Dashboard();
                             supplierDashboard.setVisible(true);
+                            resetFields();
                             this.dispose();
                             break;
                         default:

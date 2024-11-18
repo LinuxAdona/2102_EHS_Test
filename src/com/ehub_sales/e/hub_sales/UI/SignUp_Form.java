@@ -46,7 +46,7 @@ public class SignUp_Form extends javax.swing.JFrame {
         txtPassword.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         btnSignUp.setBackground(new java.awt.Color(153, 153, 255));
-        btnSignUp.setFont(new java.awt.Font("Helvetica", 0, 12)); // NOI18N
+        btnSignUp.setFont(new java.awt.Font("Helvetica", 1, 12)); // NOI18N
         btnSignUp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/sign-up.png"))); // NOI18N
         btnSignUp.setText("Sign Up");
         btnSignUp.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -106,7 +106,7 @@ public class SignUp_Form extends javax.swing.JFrame {
         );
 
         btnBack.setBackground(new java.awt.Color(153, 153, 255));
-        btnBack.setFont(new java.awt.Font("Helvetica", 0, 12)); // NOI18N
+        btnBack.setFont(new java.awt.Font("Helvetica", 1, 12)); // NOI18N
         btnBack.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/back.png"))); // NOI18N
         btnBack.setText("Go Back");
         btnBack.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
