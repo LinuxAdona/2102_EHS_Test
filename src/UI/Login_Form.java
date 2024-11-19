@@ -1,14 +1,8 @@
 package UI;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.*;
 
-import Sales.Inventory;
-import Sales.SalesReport;
-import Users.Admin;
-import Users.Customer;
 
 public class Login_Form extends javax.swing.JFrame {
     private static Login_Form main = null;
@@ -166,7 +160,7 @@ public class Login_Form extends javax.swing.JFrame {
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         String username = txtUsername.getText();
         String password = new String(txtPassword.getPassword());
-        String dbUrl = "jdbc:mysql://localhost:3306/oop_ehub_sales";
+        String dbUrl = "jdbc:mysql://localhost:3306/2102_EHS_2425";
         String dbUser  = "root";
         String dbPassword = "";
 
