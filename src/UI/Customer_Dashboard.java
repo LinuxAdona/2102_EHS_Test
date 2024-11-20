@@ -139,6 +139,10 @@ public class Customer_Dashboard extends javax.swing.JFrame {
         lblTotal.setText(formatter.format(total));
     }
     
+    private String getUserID() {
+        return Users.UserSession.getCurrentUserID();
+    }
+    
     private void setColumnWidths(JTable sourceTable, JTable targetTable) {
         for (int i = 0; i < sourceTable.getColumnCount(); i++) {
             targetTable.getColumnModel().getColumn(i).setPreferredWidth(sourceTable.getColumnModel().getColumn(i).getPreferredWidth());
@@ -446,7 +450,40 @@ public class Customer_Dashboard extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCheckOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckOutActionPerformed
-        
+        cartTableModel = (DefaultTableModel) Table_ShoppingCart.getModel();
+
+        if (cartTableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(null, "Your shopping cart is empty. Please add products before checking out.", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String dbUrl = "jdbc:mysql://localhost:3306/2102_ehs_2425"; 
+        String dbUser  = "root"; 
+        String dbPassword = ""; 
+
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUser , dbPassword)) {
+            String insertOrderQuery = "INSERT INTO orders (CustomerID, ProductID, Quantity) VALUES (?, ?, ?)";
+
+            for (int i = 0; i < cartTableModel.getRowCount(); i++) {
+                String productId = cartTableModel.getValueAt(i, 0).toString();
+                int quantity = (int) cartTableModel.getValueAt(i, 2);
+
+                try (PreparedStatement ps = con.prepareStatement(insertOrderQuery)) {
+                    ps.setString(1, getUserID());
+                    ps.setString(2, productId);
+                    ps.setInt(3, quantity);
+                    ps.executeUpdate();
+                }
+            }
+
+            cartTableModel.setRowCount(0); 
+            updateTotal();
+
+            JOptionPane.showMessageDialog(null, "Order placed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            System.out.println("Error during checkout: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "An error occurred while placing the order. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnCheckOutActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
@@ -505,7 +542,17 @@ public class Customer_Dashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddToCartActionPerformed
 
     private void btnRemoveFromCartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveFromCartActionPerformed
-        // TODO add your handling code here:
+        int selectedRow = Table_ShoppingCart.getSelectedRow(); 
+    
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(null, "Please select a product to remove from the cart.", "Error", JOptionPane.ERROR_MESSAGE);
+            return; 
+        }
+
+        cartTableModel = (DefaultTableModel) Table_ShoppingCart.getModel();
+        cartTableModel.removeRow(selectedRow);
+
+        updateTotal();
     }//GEN-LAST:event_btnRemoveFromCartActionPerformed
 
     private void btnPlusQuantityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlusQuantityActionPerformed

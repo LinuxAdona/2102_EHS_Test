@@ -1,5 +1,7 @@
 package UI;
 
+import Users.User;
+import Users.UserSession;
 import javax.swing.*;
 import java.sql.*;
 
@@ -183,6 +185,8 @@ public class Login_Form extends javax.swing.JFrame {
                         case "Customer":
                             Customer_Dashboard customerDashboard = new Customer_Dashboard();
                             customerDashboard.setVisible(true);
+                            User loggedInUser  = new User(rs.getString("User ID"), username, storedPassword);
+                            UserSession.setCurrentUser(loggedInUser);
                             resetFields();
                             this.dispose();
                             break;
