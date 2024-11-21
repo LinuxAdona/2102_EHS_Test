@@ -71,7 +71,6 @@ public class Customer_Dashboard extends javax.swing.JFrame {
     }
 
     private void updateProductDetails(String productId) {
-        // Get product details from the database
         String dbUrl = "jdbc:mysql://localhost:3306/2102_ehs_2425";
         String dbUser  = "root";
         String dbPassword = "";
@@ -146,6 +145,59 @@ public class Customer_Dashboard extends javax.swing.JFrame {
     private void setColumnWidths(JTable sourceTable, JTable targetTable) {
         for (int i = 0; i < sourceTable.getColumnCount(); i++) {
             targetTable.getColumnModel().getColumn(i).setPreferredWidth(sourceTable.getColumnModel().getColumn(i).getPreferredWidth());
+        }
+    }
+    
+    private void insertOrderIntoDatabase(String userID, String modeOfPayment, String cardNumber, String cardHolder, String expiryDate, String cvc) {
+        String dbUrl = "jdbc:mysql://localhost:3306/2102_ehs_2425"; 
+        String dbUser    = "root"; 
+        String dbPassword = ""; 
+
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUser , dbPassword)) {
+            String insertOrderQuery = "INSERT INTO orders (CustomerID, ProductID, Quantity, Price, Status, ModeOfPayment) VALUES (?, ?, ?, ?, ?, ?)";
+            String insertCardQuery = "INSERT INTO card (CustomerID, CardNo, CVC, CardHolder, Expiry) VALUES (?, ?, ?, ?, ?)";
+            String cardID = null;
+
+            if ("Card Payment".equals(modeOfPayment)) {
+                try (PreparedStatement ps = con.prepareStatement(insertCardQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                    ps.setString(1, userID);
+                    ps.setString(2, cardNumber);
+                    ps.setString(3, cvc);
+                    ps.setString(4, cardHolder);
+                    ps.setString(5, expiryDate);
+                    ps.executeUpdate();
+
+                    ResultSet generatedKeys = ps.getGeneratedKeys();
+                    if (generatedKeys.next()) {
+                        cardID = generatedKeys.getString(1);
+                    }
+                }
+            }
+
+            for (int i = 0; i < cartTableModel.getRowCount(); i++) {
+                String productId = cartTableModel.getValueAt(i, 0).toString();
+                int quantity = (int) cartTableModel.getValueAt(i, 2);
+                String priceString = cartTableModel.getValueAt(i, 3).toString(); 
+                double price = Double.parseDouble(priceString.replace("PHP ", "").replace(",", "").trim()); 
+                String status = "Pending";
+
+                try (PreparedStatement ps = con.prepareStatement(insertOrderQuery)) {
+                    ps.setString(1, userID);
+                    ps.setString(2, productId);
+                    ps.setInt(3, quantity);
+                    ps.setDouble(4, price);
+                    ps.setString(5, status);
+                    ps.setString(6, modeOfPayment);
+                    ps.executeUpdate();
+                }
+            }
+
+            cartTableModel.setRowCount(0); 
+            updateTotal();
+            JOptionPane.showMessageDialog(null, "Order placed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            System.out.println("Error during checkout: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "An error occurred while placing the order. Please try again.", "Error", JOptionPane.ERROR_MESSAGE); 
         }
     }
 
@@ -483,44 +535,23 @@ public class Customer_Dashboard extends javax.swing.JFrame {
             return;
         }
 
-        String dbUrl = "jdbc:mysql://localhost:3306/2102_ehs_2425"; 
-        String dbUser   = "root"; 
-        String dbPassword = ""; 
+        if ("Card Payment".equals(modeOfPayment)) {
+            CardPayment cardPayment = new CardPayment();
+            cardPayment.setVisible(true);
 
-        try (Connection con = DriverManager.getConnection(dbUrl, dbUser  , dbPassword)) {
-            
-            if ("Card Payment".equals(modeOfPayment)) {
-                CardPayment cardPayment = new CardPayment();
-                cardPayment.setVisible(true);
-            }
-            
-            String insertOrderQuery = "INSERT INTO orders (CustomerID, ProductID, Quantity, Price, Status, ModeOfPayment) VALUES (?, ?, ?, ?, ?, ?)";
+            cardPayment.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosed(java.awt.event.WindowEvent windowEvent) {
+                    String cardNumber = cardPayment.getCardNumber();
+                    String cardHolder = cardPayment.getCardHolder();
+                    String expiryDate = cardPayment.getExpiryDate();
+                    String cvc = cardPayment.getCVC();
 
-            for (int i = 0; i < cartTableModel.getRowCount(); i++) {
-                String productId = cartTableModel.getValueAt(i, 0).toString();
-                int quantity = (int) cartTableModel.getValueAt(i, 2);
-
-                String priceString = cartTableModel.getValueAt(i, 3).toString(); 
-                double price = Double.parseDouble(priceString.replace("PHP ", "").replace(",", "").trim()); 
-                String status = "Pending";
-                
-                try (PreparedStatement ps = con.prepareStatement(insertOrderQuery)) {
-                    ps.setString(1, loggedInUserID);
-                    ps.setString(2, productId);
-                    ps.setInt(3, quantity);
-                    ps.setDouble(4, price);
-                    ps.setString(5, status);
-                    ps.setString(6, modeOfPayment);
-                    ps.executeUpdate();
+                    insertOrderIntoDatabase(loggedInUserID, modeOfPayment, cardNumber, cardHolder, expiryDate, cvc);
                 }
-            }
-
-            cartTableModel.setRowCount(0); 
-            updateTotal();
-            JOptionPane.showMessageDialog(null, "Order placed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-        } catch (Exception e) {
-            System.out.println("Error during checkout: " + e.getMessage());
-            JOptionPane.showMessageDialog(null, "An error occurred while placing the order. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+            });
+        } else {
+            insertOrderIntoDatabase(loggedInUserID, modeOfPayment, null, null, null, null);
         }
     }//GEN-LAST:event_btnCheckOutActionPerformed
 

@@ -1,6 +1,8 @@
 
 package UI;
 
+import javax.swing.JOptionPane;
+
 public class CardPayment extends javax.swing.JFrame {
 
     public CardPayment() {
@@ -21,10 +23,10 @@ public class CardPayment extends javax.swing.JFrame {
         lblWelcome3 = new javax.swing.JLabel();
         txtCardHolder = new javax.swing.JTextField();
         lblWelcome4 = new javax.swing.JLabel();
-        txtExpiry = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         lblTotal = new javax.swing.JLabel();
         lblWelcome5 = new javax.swing.JLabel();
+        txtExpiry = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -67,8 +69,6 @@ public class CardPayment extends javax.swing.JFrame {
         lblWelcome4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         lblWelcome4.setText("EXPIRY");
 
-        txtExpiry.setFont(new java.awt.Font("Helvetica", 0, 12)); // NOI18N
-
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -96,6 +96,8 @@ public class CardPayment extends javax.swing.JFrame {
         lblWelcome5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         lblWelcome5.setText("TOTAL");
 
+        txtExpiry.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("M/d"))));
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -120,7 +122,7 @@ public class CardPayment extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblWelcome4)
                             .addComponent(txtExpiry, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
@@ -152,9 +154,9 @@ public class CardPayment extends javax.swing.JFrame {
                     .addComponent(lblWelcome4, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblWelcome5, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtExpiry, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtExpiry))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnProceed, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(13, Short.MAX_VALUE))
@@ -172,10 +174,37 @@ public class CardPayment extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
+       
+    public String getCardNumber() {
+        return txtCardNo.getText().trim();
+    }
+    
+    public String getCardHolder() {
+        return txtCardHolder.getText().trim();
+    }
+    
+    public String getExpiryDate() {
+        return txtExpiry.getText().trim();
+    }
+    
+    public String getCVC() {
+        return txtCVC.getText().trim();
+    }
+    
     private void btnProceedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProceedActionPerformed
-        
+        String cardNumber = getCardNumber();
+        String cardHolder = getCardHolder();
+        String expiryDate = getExpiryDate();
+        String cvc = getCVC();
+
+        if (cardNumber.isEmpty() || cardHolder.isEmpty() || expiryDate.isEmpty() || cvc.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill in all fields.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        this.dispose();
     }//GEN-LAST:event_btnProceedActionPerformed
 
     /**
@@ -227,6 +256,6 @@ public class CardPayment extends javax.swing.JFrame {
     private javax.swing.JTextField txtCVC;
     private javax.swing.JTextField txtCardHolder;
     private javax.swing.JTextField txtCardNo;
-    private javax.swing.JTextField txtExpiry;
+    private javax.swing.JFormattedTextField txtExpiry;
     // End of variables declaration//GEN-END:variables
 }
