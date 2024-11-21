@@ -139,8 +139,8 @@ public class Customer_Dashboard extends javax.swing.JFrame {
         lblTotal.setText(formatter.format(total));
     }
     
-    private String getUserID() {
-        return Users.UserSession.getCurrentUserID();
+    private String getLoggedInUserID() {
+        return Login_Form.loggedInUserID;
     }
     
     private void setColumnWidths(JTable sourceTable, JTable targetTable) {
@@ -175,6 +175,8 @@ public class Customer_Dashboard extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         lblTotal = new javax.swing.JLabel();
         Total = new javax.swing.JLabel();
+        comboModeOfPayment = new javax.swing.JComboBox<>();
+        Total1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -378,6 +380,13 @@ public class Customer_Dashboard extends javax.swing.JFrame {
         Total.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         Total.setText("Total");
 
+        comboModeOfPayment.setFont(new java.awt.Font("Helvetica", 0, 12)); // NOI18N
+        comboModeOfPayment.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Cash On Delivery", "Card Payment", "GCash" }));
+
+        Total1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        Total1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        Total1.setText("Mode of Payment");
+
         javax.swing.GroupLayout MainPanelLayout = new javax.swing.GroupLayout(MainPanel);
         MainPanel.setLayout(MainPanelLayout);
         MainPanelLayout.setHorizontalGroup(
@@ -389,17 +398,22 @@ public class Customer_Dashboard extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainPanelLayout.createSequentialGroup()
                         .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblShoppingCart, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE))
+                        .addComponent(lblShoppingCart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainPanelLayout.createSequentialGroup()
                         .addComponent(btnAddToCart, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnRemoveFromCart, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(MainPanelLayout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(Total)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainPanelLayout.createSequentialGroup()
+                        .addGroup(MainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(MainPanelLayout.createSequentialGroup()
+                                .addComponent(Total)
+                                .addGap(114, 114, 114)))
+                        .addGap(18, 18, 18)
+                        .addGroup(MainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(comboModeOfPayment, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Total1))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -417,12 +431,16 @@ public class Customer_Dashboard extends javax.swing.JFrame {
                             .addComponent(lblShoppingCart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(9, 9, 9)
-                        .addGroup(MainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(Total))
-                        .addGap(9, 9, 9)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(MainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(Total)
+                            .addComponent(Total1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(MainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(comboModeOfPayment))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(MainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnAddToCart, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnRemoveFromCart, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -450,6 +468,14 @@ public class Customer_Dashboard extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCheckOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckOutActionPerformed
+        String loggedInUserID = getLoggedInUserID();
+        String modeOfPayment = (String) comboModeOfPayment.getSelectedItem();
+
+        if (loggedInUserID == null || loggedInUserID.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "User  not logged in.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         cartTableModel = (DefaultTableModel) Table_ShoppingCart.getModel();
 
         if (cartTableModel.getRowCount() == 0) {
@@ -458,27 +484,39 @@ public class Customer_Dashboard extends javax.swing.JFrame {
         }
 
         String dbUrl = "jdbc:mysql://localhost:3306/2102_ehs_2425"; 
-        String dbUser  = "root"; 
+        String dbUser   = "root"; 
         String dbPassword = ""; 
 
-        try (Connection con = DriverManager.getConnection(dbUrl, dbUser , dbPassword)) {
-            String insertOrderQuery = "INSERT INTO orders (CustomerID, ProductID, Quantity) VALUES (?, ?, ?)";
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUser  , dbPassword)) {
+            
+            if ("Card Payment".equals(modeOfPayment)) {
+                CardPayment cardPayment = new CardPayment();
+                cardPayment.setVisible(true);
+            }
+            
+            String insertOrderQuery = "INSERT INTO orders (CustomerID, ProductID, Quantity, Price, Status, ModeOfPayment) VALUES (?, ?, ?, ?, ?, ?)";
 
             for (int i = 0; i < cartTableModel.getRowCount(); i++) {
                 String productId = cartTableModel.getValueAt(i, 0).toString();
                 int quantity = (int) cartTableModel.getValueAt(i, 2);
 
+                String priceString = cartTableModel.getValueAt(i, 3).toString(); 
+                double price = Double.parseDouble(priceString.replace("PHP ", "").replace(",", "").trim()); 
+                String status = "Pending";
+                
                 try (PreparedStatement ps = con.prepareStatement(insertOrderQuery)) {
-                    ps.setString(1, getUserID());
+                    ps.setString(1, loggedInUserID);
                     ps.setString(2, productId);
                     ps.setInt(3, quantity);
+                    ps.setDouble(4, price);
+                    ps.setString(5, status);
+                    ps.setString(6, modeOfPayment);
                     ps.executeUpdate();
                 }
             }
 
             cartTableModel.setRowCount(0); 
             updateTotal();
-
             JOptionPane.showMessageDialog(null, "Order placed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {
             System.out.println("Error during checkout: " + e.getMessage());
@@ -577,12 +615,14 @@ public class Customer_Dashboard extends javax.swing.JFrame {
     private javax.swing.JTable Table_Products;
     private javax.swing.JTable Table_ShoppingCart;
     private javax.swing.JLabel Total;
+    private javax.swing.JLabel Total1;
     private javax.swing.JButton btnAddToCart;
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnCheckOut;
     private javax.swing.JButton btnMinusQuantity;
     private javax.swing.JButton btnPlusQuantity;
     private javax.swing.JButton btnRemoveFromCart;
+    private javax.swing.JComboBox<String> comboModeOfPayment;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

@@ -8,6 +8,7 @@ import java.sql.*;
 
 public class Login_Form extends javax.swing.JFrame {
     private static Login_Form main = null;
+    public static String loggedInUserID;
 
     private Login_Form() {
         initComponents();
@@ -54,7 +55,7 @@ public class Login_Form extends javax.swing.JFrame {
 
         lblWelcome.setFont(new java.awt.Font("Helvetica", 1, 26)); // NOI18N
         lblWelcome.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblWelcome.setText("E-HUB SALES");
+        lblWelcome.setText("Shopaloo");
 
         lblUsername1.setFont(new java.awt.Font("Helvetica", 0, 12)); // NOI18N
         lblUsername1.setText("Username");
@@ -179,13 +180,14 @@ public class Login_Form extends javax.swing.JFrame {
             if (rs.next()) {
                 String storedPassword = rs.getString("Password");
                 if (storedPassword.equals(password)) {
+                    loggedInUserID = rs.getString("UserID");
                     JOptionPane.showMessageDialog(this, "Welcome, " + username + "!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
                     String role = rs.getString("Role");
                     switch (role) {
                         case "Customer":
                             Customer_Dashboard customerDashboard = new Customer_Dashboard();
                             customerDashboard.setVisible(true);
-                            User loggedInUser  = new User(rs.getString("User ID"), username, storedPassword);
+                            User loggedInUser  = new User(rs.getString("UserID"), username, storedPassword);
                             UserSession.setCurrentUser(loggedInUser);
                             resetFields();
                             this.dispose();
