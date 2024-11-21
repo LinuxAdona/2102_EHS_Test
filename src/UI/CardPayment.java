@@ -2,6 +2,10 @@
 package UI;
 
 import javax.swing.JOptionPane;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class CardPayment extends javax.swing.JFrame {
 
@@ -157,9 +161,9 @@ public class CardPayment extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(txtExpiry))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(btnProceed, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -191,6 +195,35 @@ public class CardPayment extends javax.swing.JFrame {
     
     public String getCVC() {
         return txtCVC.getText().trim();
+    }
+    
+    private String getLoggedInUserID() {
+        return Login_Form.loggedInUserID;
+    }
+    
+    public void setTotalAmount(double total) {
+        lblTotal.setText(String.valueOf(total));
+    }
+    
+    private void insertCardDetailsToDatabase(String cardNumber, String cvc, String cardHolder, String expiryDate, double paymentAmount) {
+        String dbUrl = "jdbc:mysql://localhost:3306/2102_ehs_2425"; 
+        String dbUser  = "root"; 
+        String dbPassword = ""; 
+
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUser , dbPassword)) {
+            String insertCardQuery = "INSERT INTO Card (CustomerID, CardNo, CVC, CardHolder, EXPIRY, Payment) VALUES (?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement ps = con.prepareStatement(insertCardQuery)) {
+                ps.setString(1, getLoggedInUserID());
+                ps.setString(2, cardNumber);
+                ps.setString(3, cvc);
+                ps.setString(4, cardHolder);
+                ps.setString(5, expiryDate);
+                ps.setDouble(6, paymentAmount);
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            System.out.println("Error inserting card details: " + e.getMessage());
+        }
     }
     
     private void btnProceedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProceedActionPerformed

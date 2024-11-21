@@ -123,16 +123,22 @@ public class Customer_Dashboard extends javax.swing.JFrame {
         return imagePath;
     }
     
-    private void updateTotal() {
+    private double calculateTotal() {
         double total = 0.0;
 
         for (int i = 0; i < cartTableModel.getRowCount(); i++) {
-            int quantity = (int) cartTableModel.getValueAt(i, 2); 
-            String priceString = cartTableModel.getValueAt(i, 3).toString(); 
-            double price = Double.parseDouble(priceString.replace("PHP ", "").replace(",", "").trim()); 
+            int quantity = (int) cartTableModel.getValueAt(i, 2);
+            String priceString = cartTableModel.getValueAt(i, 3).toString();
+
+            double price = Double.parseDouble(priceString.replace("PHP ", "").replace(",", "").trim());
 
             total += quantity * price;
         }
+        return total;
+    }
+    
+    private void updateTotal() {
+        double total = calculateTotal();
 
         NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("en", "PH"));
         lblTotal.setText(formatter.format(total));
@@ -535,23 +541,21 @@ public class Customer_Dashboard extends javax.swing.JFrame {
             return;
         }
 
+        double totalAmount = calculateTotal();
+
         if ("Card Payment".equals(modeOfPayment)) {
             CardPayment cardPayment = new CardPayment();
+            cardPayment.setTotalAmount(totalAmount);
             cardPayment.setVisible(true);
 
             cardPayment.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosed(java.awt.event.WindowEvent windowEvent) {
-                    String cardNumber = cardPayment.getCardNumber();
-                    String cardHolder = cardPayment.getCardHolder();
-                    String expiryDate = cardPayment.getExpiryDate();
-                    String cvc = cardPayment.getCVC();
-
-                    insertOrderIntoDatabase(loggedInUserID, modeOfPayment, cardNumber, cardHolder, expiryDate, cvc);
+                    insertOrderIntoDatabase(loggedInUserID, modeOfPayment, cardPayment.getCardNumber(), cardPayment.getCardHolder(), cardPayment.getExpiryDate(), cardPayment.getCVC());
                 }
             });
         } else {
-            insertOrderIntoDatabase(loggedInUserID, modeOfPayment, null, null, null, null);
+            insertOrderIntoDatabase(loggedInUserID, modeOfPayment, null , null, null, null);
         }
     }//GEN-LAST:event_btnCheckOutActionPerformed
 
