@@ -160,31 +160,13 @@ public class Customer_Dashboard extends javax.swing.JFrame {
         String dbPassword = ""; 
 
         try (Connection con = DriverManager.getConnection(dbUrl, dbUser , dbPassword)) {
-            String insertOrderQuery = "INSERT INTO orders (CustomerID, ProductID, Quantity, Price, Status, ModeOfPayment) VALUES (?, ?, ?, ?, ?, ?)";
-            String insertCardQuery = "INSERT INTO card (CustomerID, CardNo, CVC, CardHolder, Expiry) VALUES (?, ?, ?, ?, ?)";
-            String cardID = null;
-
-            if ("Card Payment".equals(modeOfPayment)) {
-                try (PreparedStatement ps = con.prepareStatement(insertCardQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
-                    ps.setString(1, userID);
-                    ps.setString(2, cardNumber);
-                    ps.setString(3, cvc);
-                    ps.setString(4, cardHolder);
-                    ps.setString(5, expiryDate);
-                    ps.executeUpdate();
-
-                    ResultSet generatedKeys = ps.getGeneratedKeys();
-                    if (generatedKeys.next()) {
-                        cardID = generatedKeys.getString(1);
-                    }
-                }
-            }
+            String insertOrderQuery = "INSERT INTO orders (UserID, ProductID, Quantity, Price, Status, ModeOfPayment) VALUES (?, ?, ?, ?, ?, ?)";
 
             for (int i = 0; i < cartTableModel.getRowCount(); i++) {
                 String productId = cartTableModel.getValueAt(i, 0).toString();
                 int quantity = (int) cartTableModel.getValueAt(i, 2);
                 String priceString = cartTableModel.getValueAt(i, 3).toString(); 
-                double price = Double.parseDouble(priceString.replace("PHP ", "").replace(",", "").trim()); 
+                double price = quantity * Double.parseDouble(priceString.replace("PHP ", "").replace(",", "").trim()); 
                 String status = "Pending";
 
                 try (PreparedStatement ps = con.prepareStatement(insertOrderQuery)) {
@@ -228,7 +210,6 @@ public class Customer_Dashboard extends javax.swing.JFrame {
         lblProductDesc = new javax.swing.JTextArea();
         btnCheckOut = new javax.swing.JButton();
         btnAddToCart = new javax.swing.JButton();
-        btnRemoveFromCart = new javax.swing.JButton();
         btnBack = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         lblTotal = new javax.swing.JLabel();
@@ -388,17 +369,6 @@ public class Customer_Dashboard extends javax.swing.JFrame {
             }
         });
 
-        btnRemoveFromCart.setBackground(new java.awt.Color(153, 153, 255));
-        btnRemoveFromCart.setFont(new java.awt.Font("Helvetica", 1, 12)); // NOI18N
-        btnRemoveFromCart.setText("Remove");
-        btnRemoveFromCart.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnRemoveFromCart.setMargin(new java.awt.Insets(2, 0, 3, 0));
-        btnRemoveFromCart.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRemoveFromCartActionPerformed(evt);
-            }
-        });
-
         btnBack.setBackground(new java.awt.Color(153, 153, 255));
         btnBack.setFont(new java.awt.Font("Helvetica", 1, 12)); // NOI18N
         btnBack.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/back.png"))); // NOI18N
@@ -460,8 +430,7 @@ public class Customer_Dashboard extends javax.swing.JFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainPanelLayout.createSequentialGroup()
                         .addComponent(btnAddToCart, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnRemoveFromCart, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainPanelLayout.createSequentialGroup()
                         .addGroup(MainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -499,9 +468,7 @@ public class Customer_Dashboard extends javax.swing.JFrame {
                             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(comboModeOfPayment))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(MainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnAddToCart, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnRemoveFromCart, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnAddToCart, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnCheckOut, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18))))
@@ -541,21 +508,31 @@ public class Customer_Dashboard extends javax.swing.JFrame {
             return;
         }
 
-        double totalAmount = calculateTotal();
+        double total = 0.0;
+        for (int i = 0; i < cartTableModel.getRowCount(); i++) {
+            String priceString = cartTableModel.getValueAt(i, 3).toString(); 
+            double price = Double.parseDouble(priceString.replace("PHP ", "").replace(",", "").trim());
+            int quantity = (int) cartTableModel.getValueAt(i, 2);
+            total += price * quantity;
+        }
 
         if ("Card Payment".equals(modeOfPayment)) {
-            CardPayment cardPayment = new CardPayment();
-            cardPayment.setTotalAmount(totalAmount);
+            CardPayment cardPayment = new CardPayment(total);
             cardPayment.setVisible(true);
 
             cardPayment.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosed(java.awt.event.WindowEvent windowEvent) {
-                    insertOrderIntoDatabase(loggedInUserID, modeOfPayment, cardPayment.getCardNumber(), cardPayment.getCardHolder(), cardPayment.getExpiryDate(), cardPayment.getCVC());
+                    String cardNumber = cardPayment.getCardNumber();
+                    String cardHolder = cardPayment.getCardHolder();
+                    String expiryDate = cardPayment.getExpiryDate();
+                    String cvc = cardPayment.getCVC();
+
+                    insertOrderIntoDatabase(loggedInUserID, modeOfPayment, cardNumber, cardHolder, expiryDate, cvc);
                 }
             });
         } else {
-            insertOrderIntoDatabase(loggedInUserID, modeOfPayment, null , null, null, null);
+            insertOrderIntoDatabase(loggedInUserID, modeOfPayment, null, null, null, null);
         }
     }//GEN-LAST:event_btnCheckOutActionPerformed
 
@@ -614,20 +591,6 @@ public class Customer_Dashboard extends javax.swing.JFrame {
         setColumnWidths(Table_Products, Table_ShoppingCart);
     }//GEN-LAST:event_btnAddToCartActionPerformed
 
-    private void btnRemoveFromCartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveFromCartActionPerformed
-        int selectedRow = Table_ShoppingCart.getSelectedRow(); 
-    
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(null, "Please select a product to remove from the cart.", "Error", JOptionPane.ERROR_MESSAGE);
-            return; 
-        }
-
-        cartTableModel = (DefaultTableModel) Table_ShoppingCart.getModel();
-        cartTableModel.removeRow(selectedRow);
-
-        updateTotal();
-    }//GEN-LAST:event_btnRemoveFromCartActionPerformed
-
     private void btnPlusQuantityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlusQuantityActionPerformed
         int quantity = Integer.parseInt(lblQuantity.getText());
         quantity += 1;
@@ -656,7 +619,6 @@ public class Customer_Dashboard extends javax.swing.JFrame {
     private javax.swing.JButton btnCheckOut;
     private javax.swing.JButton btnMinusQuantity;
     private javax.swing.JButton btnPlusQuantity;
-    private javax.swing.JButton btnRemoveFromCart;
     private javax.swing.JComboBox<String> comboModeOfPayment;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

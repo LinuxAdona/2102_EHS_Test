@@ -1,4 +1,3 @@
-
 package UI;
 
 import javax.swing.JOptionPane;
@@ -6,11 +5,18 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class CardPayment extends javax.swing.JFrame {
 
-    public CardPayment() {
+    private double totalAmount;
+
+    public CardPayment(double total) {
         initComponents();
+        this.totalAmount = total;
+        lblTotal.setText(NumberFormat.getCurrencyInstance(new Locale("en", "PH")).format(total)); // Set the total
     }
     
     @SuppressWarnings("unchecked")
@@ -30,7 +36,7 @@ public class CardPayment extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         lblTotal = new javax.swing.JLabel();
         lblWelcome5 = new javax.swing.JLabel();
-        txtExpiry = new javax.swing.JFormattedTextField();
+        txtExpiry = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -100,7 +106,7 @@ public class CardPayment extends javax.swing.JFrame {
         lblWelcome5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         lblWelcome5.setText("TOTAL");
 
-        txtExpiry.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("M/d"))));
+        txtExpiry.setFont(new java.awt.Font("Helvetica", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -125,8 +131,8 @@ public class CardPayment extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblWelcome4)
-                            .addComponent(txtExpiry, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(txtExpiry, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
@@ -184,49 +190,49 @@ public class CardPayment extends javax.swing.JFrame {
     public String getCardNumber() {
         return txtCardNo.getText().trim();
     }
-    
+
     public String getCardHolder() {
         return txtCardHolder.getText().trim();
     }
-    
+
     public String getExpiryDate() {
         return txtExpiry.getText().trim();
     }
-    
+
     public String getCVC() {
         return txtCVC.getText().trim();
     }
-    
-    private String getLoggedInUserID() {
-        return Login_Form.loggedInUserID;
-    }
-    
-    public void setTotalAmount(double total) {
-        lblTotal.setText(String.valueOf(total));
-    }
-    
-    private void insertCardDetailsToDatabase(String cardNumber, String cvc, String cardHolder, String expiryDate, double paymentAmount) {
-        String dbUrl = "jdbc:mysql://localhost:3306/2102_ehs_2425"; 
-        String dbUser  = "root"; 
-        String dbPassword = ""; 
 
-        try (Connection con = DriverManager.getConnection(dbUrl, dbUser , dbPassword)) {
-            String insertCardQuery = "INSERT INTO Card (CustomerID, CardNo, CVC, CardHolder, EXPIRY, Payment) VALUES (?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement ps = con.prepareStatement(insertCardQuery)) {
-                ps.setString(1, getLoggedInUserID());
-                ps.setString(2, cardNumber);
-                ps.setString(3, cvc);
-                ps.setString(4, cardHolder);
-                ps.setString(5, expiryDate);
-                ps.setDouble(6, paymentAmount);
-                ps.executeUpdate();
-            }
-        } catch (Exception e) {
-            System.out.println("Error inserting card details: " + e.getMessage());
+    // Method to validate the logged-in user
+    private String getLoggedInUserID() {
+        String loggedInUserID = Login_Form.loggedInUserID; // Replace this with your session logic
+        if (loggedInUserID == null || loggedInUserID.isEmpty()) {
+            System.out.println("No logged-in user ID found.");
         }
+        return loggedInUserID;
     }
-    
-    private void btnProceedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProceedActionPerformed
+
+    // Validate customer ID in the database
+    private boolean validateCustomerID(String customerId) {
+        String dbUrl = "jdbc:mysql://localhost:3306/2102_ehs_2425";
+        String dbUser = "root";
+        String dbPassword = "";
+
+        String checkCustomerQuery = "SELECT COUNT(*) FROM users WHERE UserID = ?";
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUser, dbPassword); PreparedStatement ps = con.prepareStatement(checkCustomerQuery)) {
+            ps.setString(1, customerId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                return true;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error validating CustomerID: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // Validate card input fields
+    private boolean validateCardInput() {
         String cardNumber = getCardNumber();
         String cardHolder = getCardHolder();
         String expiryDate = getExpiryDate();
@@ -234,9 +240,69 @@ public class CardPayment extends javax.swing.JFrame {
 
         if (cardNumber.isEmpty() || cardHolder.isEmpty() || expiryDate.isEmpty() || cvc.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please fill in all fields.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (!cardNumber.matches("\\d{16}")) {
+            JOptionPane.showMessageDialog(this, "Card number must be 16 digits.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (!cvc.matches("\\d{3}")) {
+            JOptionPane.showMessageDialog(this, "CVC must be 3 digits.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (!expiryDate.matches("\\d{1,2}/\\d{1,2}")) {
+            JOptionPane.showMessageDialog(this, "Expiry date must be in MM/YY format.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return true;
+    }
+
+    // Insert card details into the database
+    private void insertCardDetailsToDatabase(String customerId, String cardNumber, String cvc, String cardHolder, String expiryDate, double paymentAmount) {
+        String dbUrl = "jdbc:mysql://localhost:3306/2102_ehs_2425";
+        String dbUser = "root";
+        String dbPassword = "";
+
+        String insertCardQuery = "INSERT INTO CardPayment (UserID, CardNo, CVC, CardHolder, EXPIRY, Payment) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection con = DriverManager.getConnection(dbUrl, dbUser, dbPassword); PreparedStatement ps = con.prepareStatement(insertCardQuery)) {
+            ps.setString(1, customerId);
+            ps.setString(2, cardNumber);
+            ps.setString(3, cvc);
+            ps.setString(4, cardHolder);
+            ps.setString(5, expiryDate);
+            ps.setDouble(6, paymentAmount);
+            ps.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Payment successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException e) {
+            System.out.println("Error inserting card details: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "An error occurred while processing payment.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void btnProceedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProceedActionPerformed
+        if (!validateCardInput()) {
             return;
         }
 
+        String customerId = getLoggedInUserID();
+        if (!validateCustomerID(customerId)) {
+            JOptionPane.showMessageDialog(this, "Invalid CustomerID.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        insertCardDetailsToDatabase(
+                customerId,
+                getCardNumber(),
+                getCVC(),
+                getCardHolder(),
+                getExpiryDate(),
+                totalAmount
+        );
+        
         this.dispose();
     }//GEN-LAST:event_btnProceedActionPerformed
 
@@ -244,33 +310,10 @@ public class CardPayment extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(CardPayment.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(CardPayment.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(CardPayment.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(CardPayment.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new CardPayment().setVisible(true);
+                new CardPayment(0.00).setVisible(true);
             }
         });
     }
@@ -289,6 +332,6 @@ public class CardPayment extends javax.swing.JFrame {
     private javax.swing.JTextField txtCVC;
     private javax.swing.JTextField txtCardHolder;
     private javax.swing.JTextField txtCardNo;
-    private javax.swing.JFormattedTextField txtExpiry;
+    private javax.swing.JTextField txtExpiry;
     // End of variables declaration//GEN-END:variables
 }
